@@ -24,9 +24,5 @@ jobs:
       - name: Create report file
         run: date +%s > report.txt
         
-      - name: Commit report
-        run: |
-          git config --global user.name 'Cron Github action'
-          git config --global user.email 'cron@daredevel.com'
-          git commit report.txt -m "Automated report"
-          git push
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
