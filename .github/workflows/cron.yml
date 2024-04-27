@@ -28,5 +28,5 @@ jobs:
         run: |
           git config --global user.name 'Cron Github action'
           git config --global user.email 'cron@daredevel.com'
-          git commit -am "Automated report"
+          git commit report.txt -m "Automated report"
           git push
