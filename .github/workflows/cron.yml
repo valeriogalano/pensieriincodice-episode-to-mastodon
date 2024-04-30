@@ -22,7 +22,7 @@ jobs:
           php-version: '8.3'
 
       - name: Execute
-        run: php ./publis.php ${{ secrets.TEST }}
+        run: php ./publish.php ${{ secrets.MASTODON_TOKEN }}
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
