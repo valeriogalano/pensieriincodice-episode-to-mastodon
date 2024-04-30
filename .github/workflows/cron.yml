@@ -22,7 +22,7 @@ jobs:
           php-version: '8.3'
 
       - name: Execute
-        run: php ./publis.php ${{ TEST }}
+        run: php ./publis.php ${{ test }}
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
