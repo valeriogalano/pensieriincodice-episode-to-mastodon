@@ -58,9 +58,9 @@ function is_just_published($last_episode, $file_path)
     return strpos($content, $link) !== false;
 }
 
-$feed_url = 'https://pensieriincodice.it/podcast/index.xml';
+$feed_url = getenv('PODCAST_RSS_URL');
 $mastodon_url = 'https://mastodon.uno/api/v1/statuses';
-$mastodon_token = $argv[1];
+$mastodon_token = getenv('MASTODON_TOKEN');
 $file_path = './published_episodes.txt';
 
 $last_episode = fetch_last_episode($feed_url);

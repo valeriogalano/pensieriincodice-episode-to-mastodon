@@ -22,7 +22,10 @@ jobs:
           php-version: '8.3'
 
       - name: Execute
-        run: php ./publish.php ${{ secrets.MASTODON_TOKEN }}
+        env:
+          PODCAST_RSS_URL: ${{ secrets.PODCAST_RSS_URL }}
+          MASTODON_TOKEN: ${{ secrets.MASTODON_TOKEN }}
+        run: php ./publish.php
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
