@@ -3,11 +3,10 @@
 /**
  * Fetch last episode from podcast feed
  */
-function fetch_last_episode($feed_url)
+function fetch_last_episode($feed_url): SimpleXMLElement|false
 {
     $feed = simplexml_load_file($feed_url);
-    $last_episode = $feed->channel->item[0];
-    return $last_episode;
+    return $feed->channel->item[0];
 }
 
 /**
@@ -63,7 +62,10 @@ $mastodon_url = 'https://mastodon.uno/api/v1/statuses';
 $mastodon_token = getenv('MASTODON_TOKEN');
 $file_path = './published_episodes.txt';
 
-$last_episode = fetch_last_episode($feed_url);
+if ($last_episode = fetch_last_episode($feed_url)) {
+    echo "Last episode fetched successfully: " . $last_episode->link . "\n";
+}
+
 if (!is_just_published($last_episode, $file_path)) {
     if (publish_to_mastodon($last_episode, $mastodon_url, $mastodon_token)) {
         mark_as_published($last_episode, $file_path);
