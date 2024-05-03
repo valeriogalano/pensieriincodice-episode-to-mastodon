@@ -23,7 +23,7 @@ jobs:
 
       - name: Execute
         env:
-          PODCAST_RSS_URL: ${{ secrets.PODCAST_RSS_URL }}
+          PODCAST_RSS_URL: ${{ vars.PODCAST_RSS_URL }}
           MASTODON_TOKEN: ${{ secrets.MASTODON_TOKEN }}
         run: php ./publish.php
 
