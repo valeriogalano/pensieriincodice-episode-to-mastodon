@@ -36,7 +36,7 @@ function publish_to_mastodon($last_episode, $mastodon_url, $mastodon_token, $tem
     $response = file_get_contents($mastodon_url, false, stream_context_create($options));
     // log error
     if ($response === false) {
-        error_log(error_get_last());
+        error_log('Error publishing to Mastodon: ' . print_r(error_get_last(), true));
     }
     return $response;
 }
