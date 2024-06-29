@@ -113,5 +113,9 @@ if ($last_episode = fetch_last_episode($feed_url)) {
 if (!is_just_published($last_episode, $file_path)) {
     if (publish_to_mastodon($last_episode, $mastodon_url, $mastodon_token, $template)) {
         mark_as_published($last_episode, $file_path);
+    } else {
+        echo "Error publishing to Mastodon\n";
     }
+} else {
+    echo "Episode already published\n";
 }
