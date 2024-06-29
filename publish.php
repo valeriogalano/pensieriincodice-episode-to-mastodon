@@ -75,7 +75,7 @@ function escape(array|string $string): string|array
  */
 function mark_as_published($last_episode, $file_path): void
 {
-    if ($link = $last_episode->link === null) {
+    if (($link = $last_episode->link) === null) {
         error_log('Error fetching last episode: ' . print_r(error_get_last(), true));
         exit(1);
     }
@@ -90,7 +90,7 @@ function mark_as_published($last_episode, $file_path): void
  */
 function is_just_published($last_episode, $file_path): bool
 {
-    if ($link = $last_episode->link === null) {
+    if (($link = $last_episode->link) === null) {
         error_log('Error fetching last episode: ' . print_r(error_get_last(), true));
         exit(1);
     }
