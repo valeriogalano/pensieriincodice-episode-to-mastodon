@@ -3,36 +3,52 @@
 /**
  * Fetch last episode from podcast feed
  */
-function fetch_last_episode($feed_url): SimpleXMLElement|false
+function fetch_last_episode(string $feed_url): SimpleXMLElement|false
 {
     $feed = simplexml_load_file($feed_url);
-    return $feed->channel->item[0];
+
+    if ($feed === false) {
+        error_log('Error fetching feed: ' . print_r(error_get_last(), true));
+        exit(1);
+    }
+
+    $item = $feed->channel->item[0];
+
+    if ($item === null) {
+        error_log('Error fetching last episode: ' . print_r(error_get_last(), true));
+        exit(1);
+    }
+
+    return $item;
 }
 
 /**
  * Publish last episode to social Mastodon
  */
-function publish_to_mastodon($last_episode, $mastodon_url, $mastodon_token, $template): false|string
+function publish_to_mastodon(SimpleXMLElement $last_episode, string $mastodon_url, string $mastodon_token, string $template): false|string
 {
+    if (empty($title = $last_episode->title) || empty($link = $last_episode->link)) {
+        error_log('Error fetching last episode: ' . print_r(error_get_last(), true));
+        exit(1);
+    }
+
     $content = str_replace(
         ['{title}', '{link}'],
-        [escape($last_episode->title), escape($last_episode->link)],
+        [escape($title), escape($link)],
         $template
     );
 
     // log content
     echo "Publishing to Mastodon: $content\n";
 
-    $data = array(
-        'status' => $content,
-    );
-
     $options = array(
         'http' => array(
             'header' => "Content-type: application/x-www-form-urlencoded\r\n" .
                 "Authorization: Bearer $mastodon_token\r\n",
             'method' => 'POST',
-            'content' => http_build_query($data),
+            'content' => http_build_query([
+                'status' => $content,
+            ]),
         ),
     );
 
@@ -40,6 +56,7 @@ function publish_to_mastodon($last_episode, $mastodon_url, $mastodon_token, $tem
     // log error
     if ($response === false) {
         error_log('Error publishing to Mastodon: ' . print_r(error_get_last(), true));
+        exit(1);
     }
     return $response;
 }
@@ -58,7 +75,12 @@ function escape(array|string $string): string|array
  */
 function mark_as_published($last_episode, $file_path): void
 {
-    $link = $last_episode->link;
+    if ($link = $last_episode->link === null) {
+        error_log('Error fetching last episode: ' . print_r(error_get_last(), true));
+        exit(1);
+    }
+
+    echo "Marking as published: $link\n";
 
     file_put_contents($file_path, "$link\n", FILE_APPEND);
 }
@@ -68,8 +90,13 @@ function mark_as_published($last_episode, $file_path): void
  */
 function is_just_published($last_episode, $file_path): bool
 {
-    $link = $last_episode->link;
+    if ($link = $last_episode->link === null) {
+        error_log('Error fetching last episode: ' . print_r(error_get_last(), true));
+        exit(1);
+    }
+
     $content = file_get_contents($file_path);
+
     return str_contains($content, $link);
 }
 
