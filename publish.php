@@ -33,8 +33,12 @@ function publish_to_mastodon($last_episode, $mastodon_url, $mastodon_token, $tem
         ),
     );
 
-    $context = stream_context_create($options);
-    return file_get_contents($mastodon_url, false, $context);
+    $response = file_get_contents($mastodon_url, false, stream_context_create($options));
+    // log error
+    if ($response === false) {
+        error_log(error_get_last());
+    }
+    return $response;
 }
 
 /**
