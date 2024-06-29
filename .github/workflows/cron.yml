@@ -25,6 +25,7 @@ jobs:
         env:
           PODCAST_RSS_URL: ${{ vars.PODCAST_RSS_URL }}
           MASTODON_TOKEN: ${{ secrets.MASTODON_TOKEN }}
+          MASTODON_MESSAGE_TEMPLATE: ${{ vars.MASTODON_MESSAGE_TEMPLATE }}
         run: php ./publish.php
 
       - name: Commit changes
