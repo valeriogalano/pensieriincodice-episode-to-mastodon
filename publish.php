@@ -20,6 +20,9 @@ function publish_to_mastodon($last_episode, $mastodon_url, $mastodon_token, $tem
         $template
     );
 
+    // log content
+    echo "Publishing to Mastodon: $content\n";
+
     $data = array(
         'status' => $content,
     );
