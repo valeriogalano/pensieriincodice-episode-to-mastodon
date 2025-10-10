@@ -19,23 +19,29 @@ jobs:
           php-version: '8.3'
 
       - name: Create podcasts config
+        env:
+          PODCAST1_RSS_URL: ${{ vars.PODCAST1_RSS_URL }}
+          PODCAST1_TEMPLATE: ${{ vars.PODCAST1_TEMPLATE }}
+          PODCAST2_RSS_URL: ${{ vars.PODCAST2_RSS_URL }}
+          PODCAST2_TEMPLATE: ${{ vars.PODCAST2_TEMPLATE }}
         run: |
-          cat > podcasts.json << 'EOF'
-          [
-            {
-              "id": "pensieriincodice",
-              "name": "Pensieri in Codice",
-              "feed_url": "${{ vars.PODCAST1_RSS_URL }}",
-              "template": "${{ vars.PODCAST1_TEMPLATE }}"
-            },
-            {
-              "id": "goodvibrations",
-              "name": "Pensieri in Codice",
-              "feed_url": "${{ vars.PODCAST2_RSS_URL }}",
-              "template": "${{ vars.PODCAST2_TEMPLATE }}"
-            }
-          ]
-          EOF
+          php -r '
+          $config = [
+            [
+              "id" => "pensieriincodice",
+              "name" => "Pensieri in Codice",
+              "feed_url" => getenv("PODCAST1_RSS_URL"),
+              "template" => getenv("PODCAST1_TEMPLATE")
+            ],
+            [
+              "id" => "goodvibrations",
+              "name" => "Good Vibrations",
+              "feed_url" => getenv("PODCAST2_RSS_URL"),
+              "template" => getenv("PODCAST2_TEMPLATE")
+            ]
+          ];
+          file_put_contents("podcasts.json", json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+          '
 
       - name: Run publish script
         env:
