@@ -62,7 +62,7 @@ function publish_to_mastodon(SimpleXMLElement $last_episode, string $mastodon_ur
 
     $content = str_replace(
         ['{title}', '{link}'],
-        [escape($title), escape($link)],
+		[(string)$title, (string)$link],
         $template
     );
 
@@ -87,15 +87,6 @@ function publish_to_mastodon(SimpleXMLElement $last_episode, string $mastodon_ur
         exit(1);
     }
     return $response;
-}
-
-/**
- * @param array|string $string
- * @return array|string|string[]
- */
-function escape(array|string $string): string|array
-{
-	return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
 }
 
 /**
