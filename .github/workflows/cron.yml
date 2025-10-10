@@ -1,19 +1,16 @@
-name: Cron
+name: Publish Podcast Episodes
 
 on:
   schedule:
-    - cron: '0 7-18 * * *'
-  workflow_dispatch:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:  # Allow manual trigger
 
 jobs:
-  execute:
+  publish:
     runs-on: ubuntu-latest
-    
-    permissions:
-      contents: write
-    
+
     steps:
-      - name: Checkout 
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup PHP
@@ -21,12 +18,34 @@ jobs:
         with:
           php-version: '8.3'
 
-      - name: Execute
-        env:
-          PODCAST_RSS_URL: ${{ vars.PODCAST_RSS_URL }}
-          MASTODON_TOKEN: ${{ secrets.MASTODON_TOKEN }}
-          MASTODON_MESSAGE_TEMPLATE: ${{ vars.MASTODON_MESSAGE_TEMPLATE }}
-        run: php ./publish.php
+      - name: Create podcasts config
+        run: |
+          cat > podcasts.json << 'EOF'
+          [
+            {
+              "id": "pensieriincodice",
+              "name": "Pensieri in Codice",
+              "feed_url": "${{ vars.PODCAST1_RSS_URL }}",
+              "template": "${{ vars.PODCAST1_TEMPLATE }}"
+            },
+            {
+              "id": "goodvibrations",
+              "name": "Pensieri in Codice",
+              "feed_url": "${{ vars.PODCAST2_RSS_URL }}",
+              "template": "${{ vars.PODCAST2_TEMPLATE }}"
+            }
+          ]
+          EOF
 
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Run publish script
+        env:
+          MASTODON_TOKEN: ${{ secrets.MASTODON_TOKEN }}
+        run: php publish.php
+
+      - name: Commit tracking files
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add published_episodes_*.txt
+          git diff --staged --quiet || git commit -m "Update published episodes [skip ci]"
+          git push
