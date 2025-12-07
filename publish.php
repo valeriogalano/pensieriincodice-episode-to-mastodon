@@ -172,6 +172,7 @@ foreach ($podcasts as $podcast) {
 			echo "✓ Successfully published!\n";
 		} else {
 			echo "✗ Error publishing to Mastodon\n";
+			exit(1);
 		}
 	} else {
 		echo "Episode already published\n";
