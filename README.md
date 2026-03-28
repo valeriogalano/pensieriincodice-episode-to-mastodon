@@ -1,36 +1,64 @@
-# pensieriincodice-episode-to-mastodon
+<div align="center">
+  <img src="https://cdn.pensieriincodice.it/images/pensieriincodice-locandina.png" alt="Logo Progetto" width="150"/>
+  <h1>Pensieri In Codice — Episode to Mastodon</h1>
+  <p>GitHub Action che pubblica automaticamente i nuovi episodi del podcast su Mastodon.</p>
+  <p>
+    <img src="https://img.shields.io/github/stars/valeriogalano/pensieriincodice-episode-to-mastodon?style=for-the-badge" alt="GitHub Stars"/>
+    <img src="https://img.shields.io/github/forks/valeriogalano/pensieriincodice-episode-to-mastodon?style=for-the-badge" alt="GitHub Forks"/>
+    <img src="https://img.shields.io/github/last-commit/valeriogalano/pensieriincodice-episode-to-mastodon?style=for-the-badge" alt="Last Commit"/>
+    <a href="https://pensieriincodice.it/sostieni" target="_blank" rel="noopener noreferrer">
+      <img src="https://img.shields.io/badge/sostieni-Pensieri_in_codice-fb6400?style=for-the-badge" alt="Sostieni Pensieri in codice"/>
+    </a>
+  </p>
+</div>
 
-## Description
-This GitHub Action posts to Mastodon the latest episode of your podcasts. It supports multiple podcasts with separate tracking and custom message templates for each.
+---
 
-## Setup
+## Come funziona
 
-### 1. Clone the repository
+Il workflow viene eseguito ogni 6 ore. Per ogni podcast configurato, controlla il feed RSS alla ricerca di nuovi episodi. Gli episodi già pubblicati vengono tracciati in un file `published_episodes_{podcast_id}.txt` per evitare duplicati. Il workflow può essere attivato anche manualmente dalla scheda Actions.
+
+---
+
+## Requisiti
+
+- Un account Mastodon con access token (`write:statuses`)
+- Uno o più feed RSS di podcast
+
+---
+
+## Installazione e configurazione
+
+### 1. Clona la repository
+
 ```bash
 git clone https://github.com/YOUR_USERNAME/pensieriincodice-episode-to-mastodon.git
 cd pensieriincodice-episode-to-mastodon
 ```
 
-### 2. Configure GitHub Actions Secrets
-Go to your repository **Settings > Secrets and variables > Actions** and add the following **Secret**:
+### 2. Configura i secrets di GitHub Actions
 
-- `MASTODON_TOKEN`: Your Mastodon API access token
-  - Get it from your Mastodon instance: **Settings > Development > New Application**
-  - Grant `write:statuses` permission
-  - Copy the generated access token
+In **Settings → Secrets and variables → Actions**, aggiungi il seguente **Secret**:
 
-### 3. Configure GitHub Actions Variables
-In the same section, under the **Variables** tab, add:
+| Secret | Descrizione |
+|---|---|
+| `MASTODON_TOKEN` | Token di accesso Mastodon (da Impostazioni → Sviluppo → Nuova applicazione) |
 
-- `PODCAST1_RSS_URL`: RSS feed URL for your first podcast
-- `PODCAST1_TEMPLATE`: Message template for the first podcast
-- `PODCAST2_RSS_URL`: RSS feed URL for your second podcast
-- `PODCAST2_TEMPLATE`: Message template for the second podcast
+### 3. Configura le variabili di GitHub Actions
 
-### 4. Message Templates
-Valid placeholders for templates: `{title}`, `{link}`
+Nella stessa sezione, sotto la scheda **Variables**, aggiungi:
 
-Example templates:
+| Variabile | Descrizione |
+|---|---|
+| `PODCAST1_RSS_URL` | URL del feed RSS del primo podcast |
+| `PODCAST1_TEMPLATE` | Template del messaggio per il primo podcast |
+| `PODCAST2_RSS_URL` | URL del feed RSS del secondo podcast |
+| `PODCAST2_TEMPLATE` | Template del messaggio per il secondo podcast |
+
+### 4. Template del messaggio
+
+I placeholder disponibili sono `{title}` e `{link}`. Esempio:
+
 ```
 🎙️ Nuovo episodio di Pensieri in Codice!
 
@@ -41,31 +69,48 @@ Ascoltalo qui: {link}
 #Podcast #Tech
 ```
 
-**Note:** Mastodon supports plain text and Markdown. Add hashtags for better discoverability.
+### 5. Configurazione dell'istanza Mastodon
 
-### 5. Mastodon Instance Configuration
-The default Mastodon instance is `https://mastodon.uno`. To use a different instance, edit the `$mastodon_url` variable in `publish.php`:
+L'istanza predefinita è `https://mastodon.uno`. Per usarne una diversa, modifica la variabile `$mastodon_url` in `publish.php`:
 
 ```php
-$mastodon_url = 'https://YOUR_INSTANCE/api/v1/statuses';
+$mastodon_url = 'https://TUA_ISTANZA/api/v1/statuses';
 ```
 
-### 6. Adding More Podcasts
-To add more podcasts, edit `.github/workflows/cron.yml` and add additional podcast configurations in the "Create podcasts config" step:
+### 6. Aggiungere altri podcast
+
+Modifica `.github/workflows/cron.yml` e aggiungi nuove configurazioni nello step "Create podcasts config":
 
 ```php
 [
-  "id" => "mypodcast",
-  "name" => "My Podcast",
+  "id" => "miopodcast",
+  "name" => "Il mio podcast",
   "feed_url" => getenv("PODCAST3_RSS_URL"),
   "template" => getenv("PODCAST3_TEMPLATE")
 ]
 ```
 
-Then add the corresponding GitHub Actions variables (`PODCAST3_RSS_URL`, `PODCAST3_TEMPLATE`).
+Aggiungi poi le variabili corrispondenti (`PODCAST3_RSS_URL`, `PODCAST3_TEMPLATE`) in GitHub Actions.
 
-## How It Works
-- The workflow runs automatically every 6 hours
-- Each podcast is tracked separately in `published_episodes_{podcast_id}.txt`
-- Only new episodes are published
-- The workflow can also be triggered manually from the Actions tab
+---
+
+## Contributi
+
+Se noti qualche problema o hai suggerimenti, sentiti libero di aprire una **Issue** e successivamente una **Pull Request**. Ogni contributo è ben accetto!
+
+---
+
+## Importante
+
+Vorremmo mantenere questo repository aperto e gratuito per tutti, ma lo scraping del contenuto di questo repository **NON È CONSENTITO**. Se ritieni che questo lavoro ti sia utile e vuoi utilizzare qualche risorsa, ti preghiamo di citare come fonte il podcast e/o questo repository.
+
+---
+
+<div align="center">
+  <p>Realizzato con ❤️ da <strong>Valerio Galano</strong></p>
+  <p>
+    <a href="https://valeriogalano.it/">Sito Web</a> |
+    <a href="https://daredevel.com/">Blog</a> |
+    <a href="https://pensieriincodice.it/">Podcast</a>
+  </p>
+</div>
