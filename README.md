@@ -16,7 +16,7 @@
 
 ## Come funziona
 
-Il workflow viene eseguito ogni 6 ore. Per ogni podcast configurato, controlla il feed RSS alla ricerca di nuovi episodi. Gli episodi già pubblicati vengono tracciati in un file `published_episodes_{podcast_id}.txt` per evitare duplicati. Il workflow può essere attivato anche manualmente dalla scheda Actions.
+Il workflow viene eseguito ogni ora. Per ogni podcast configurato, controlla il feed RSS alla ricerca di nuovi episodi. Gli episodi già pubblicati vengono tracciati tramite la variabile GitHub `LAST_PUBLISHED_URLS` (JSON) per evitare duplicati. Il workflow può essere attivato anche manualmente dalla scheda Actions.
 
 ---
 
@@ -71,26 +71,30 @@ Ascoltalo qui: {link}
 
 ### 5. Configurazione dell'istanza Mastodon
 
-L'istanza predefinita è `https://mastodon.uno`. Per usarne una diversa, modifica la variabile `$mastodon_url` in `publish.php`:
+L'istanza predefinita è `https://mastodon.uno`, configurata in `mastodon_helper.py`. Per usarne una diversa, modifica la costante `API_URL` nel file:
 
-```php
-$mastodon_url = 'https://TUA_ISTANZA/api/v1/statuses';
+```python
+API_URL = 'https://TUA_ISTANZA'
 ```
 
 ### 6. Aggiungere altri podcast
 
 Modifica `.github/workflows/cron.yml` e aggiungi nuove configurazioni nello step "Create podcasts config":
 
-```php
-[
-  "id" => "miopodcast",
-  "name" => "Il mio podcast",
-  "feed_url" => getenv("PODCAST3_RSS_URL"),
-  "template" => getenv("PODCAST3_TEMPLATE")
-]
+```python
+{'id': 'miopodcast', 'name': 'Il mio podcast', 'feed_url': os.environ['PODCAST3_RSS_URL'], 'template': os.environ['PODCAST3_TEMPLATE']},
 ```
 
-Aggiungi poi le variabili corrispondenti (`PODCAST3_RSS_URL`, `PODCAST3_TEMPLATE`) in GitHub Actions.
+Aggiungi poi le variabili corrispondenti (`PODCAST3_RSS_URL`, `PODCAST3_TEMPLATE`) sia nello step `env:` del workflow che in GitHub Actions.
+
+### 7. Sviluppo locale (opzionale)
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # macOS/Linux
+# .venv\Scripts\activate   # Windows
+pip install -r requirements.txt
+```
 
 ---
 
